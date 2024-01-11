@@ -15,6 +15,8 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- <script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js"></script> -->
 </head>
 
 <body>
@@ -67,8 +69,7 @@
     <div class="tab-content" id="pills-tabContent">
 
       <!-- List-view -->
-      <div class="tab-pane fade show active task-list-table" id="pills-list" role="tabpanel" aria-labelledby="pills-list-tab"
-        tabindex="0">
+      <div class="tab-pane fade show active task-list-table" id="pills-list" role="tabpanel" aria-labelledby="pills-list-tab" tabindex="0">
         <!-- Task List Table -->
         <div class="table-responsive">
           <table class="table table-hover" style="overflow-x: auto;">
@@ -83,42 +84,38 @@
               </tr>
             </thead>
             <tbody id="taskListTableBody">
-              
+
             </tbody>
           </table>
         </div>
       </div>
 
       <!-- Board View -->
-      <div class="tab-pane fade bg-blur" id="pills-board" role="tabpanel" aria-labelledby="pills-board-tab"
-        tabindex="0">
+      <div class="tab-pane fade bg-blur" id="pills-board" role="tabpanel" aria-labelledby="pills-board-tab" tabindex="0">
         <div class="row">
-          <div class="col">
+          <div class="col-md-4 col-sm-6 mb-2" id="highPriorityBoard">
             <h4>High Priority</h4>
-            <div class="card">
-              <div class="card-body" id="highPriorityBoard">
-                <!-- Task Cards with High Priority -->
-                
+            <!-- <div class="card">
+              <div class="card-body">
+                Task Cards with High Priority
               </div>
-            </div>
+            </div> -->
           </div>
-          <div class="col">
+          <div class="col-md-4 col-sm-6 mb-2" id="mediumPriorityBoard">
             <h4>Medium Priority</h4>
-            <div class="card">
-              <div class="card-body" id="mediumPriorityBoard">
-                <!-- Task Cards with Medium Priority -->
-                
+            <!-- <div class="card">
+              <div class="card-body">
+                Task Cards with Medium Priority
               </div>
-            </div>
+            </div> -->
           </div>
-          <div class="col">
+          <div class="col-md-4 col-sm-6 mb-2" id="lowPriorityBoard">
             <h4>Low Priority</h4>
-            <div class="card">
-              <div class="card-body" id="lowPriorityBoard">
-                <!-- Task Cards with Low Priority -->
-                
+            <!-- <div class="card">
+              <div class="card-body">
+                Task Cards with Low Priority
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -126,10 +123,16 @@
       <!-- Calendar View -->
       <div class="tab-pane fade" id="pills-calendar" role="tabpanel" aria-labelledby="pills-calendar-tab" tabindex="0">
         <div class="card p-4">
+          <div class="p" id="info">
+            <!-- Color code of priority -->
+            <span class="badge bg-success">Low</span>
+            <span class="badge bg-warning text-dark">Medium</span>
+            <span class="badge bg-danger">High</span>
+          </div>
           <div id="calendar"></div>
         </div>
       </div>
-      
+
     </div>
 
     <!-- New Task Modal -->
@@ -141,41 +144,49 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="addTaskForm">
+            <form autocomplete="on" id="addTaskForm" class="needs-validation" novalidate>
               <div class="mb-3">
                 <label for="newTaskTitle" class="form-label">Task Title</label>
-                <input type="text" class="form-control" id="newTaskTitle" placeholder="Enter task title" required />
+                <input type="text" class="form-control" id="newTaskTitle" placeholder="Enter task title" required
+                  autocomplete="new-task-title" />
+                <div class="invalid-feedback">Please enter a task title.</div>
               </div>
               <div class="mb-3">
                 <label for="newTaskDescription" class="form-label">Task Description</label>
-                <textarea class="form-control" id="newTaskDescription" rows="3"
-                  placeholder="Enter task description"></textarea>
+                <textarea class="form-control" id="newTaskDescription" rows="3" placeholder="Enter task description"
+                  required autocomplete="new-task-description"></textarea>
+                <div class="invalid-feedback">Please enter a task description.</div>
               </div>
               <div class="mb-3">
                 <label for="newEndDate" class="form-label">End Date</label>
-                <input type="date" class="form-control" id="newEndDate" required />
+                <input type="date" class="form-control" id="newEndDate" required autocomplete="new-end-date" />
+                <div class="invalid-feedback">Please select an end date.</div>
               </div>
               <div class="mb-3">
                 <label for="newStatus" class="form-label">Status</label>
-                <select class="form-select" id="newStatus" required>
+                <select class="form-select" id="newStatus" required autocomplete="new-status">
                   <option value="">Select status</option>
                   <option value="Not Started"><span class="badge bg-primary">Not Started</span></option>
                   <option value="In Progress"><span class="badge bg-warning text-dark">In Progress</span></option>
                   <option value="Completed"><span class="badge bg-success">Completed</span></option>
                 </select>
+                <div class="invalid-feedback">Please select a status.</div>
               </div>
               <div class="mb-3">
                 <label for="newPriority" class="form-label">Priority</label>
-                <select class="form-select" id="newPriority" required>
+                <select class="form-select" id="newPriority" required autocomplete="new-priority">
                   <option value="">Select priority</option>
                   <option value="Low"><span class="badge bg-success">Low</span></option>
                   <option value="Medium"><span class="badge bg-warning text-dark">Medium</span></option>
                   <option value="High"><span class="badge bg-danger">High</span></option>
                 </select>
+                <div class="invalid-feedback">Please select a priority.</div>
               </div>
               <div class="mb-3">
                 <label for="newAssignee" class="form-label">Assignee</label>
-                <input type="text" class="form-control" id="newAssignee" placeholder="Enter assignee" required />
+                <input type="text" class="form-control" id="newAssignee" placeholder="Enter assignee" required
+                  autocomplete="new-assignee" />
+                <div class="invalid-feedback">Please enter an assignee.</div>
               </div>
               <button type="button" class="btn btn-primary" onclick="addNewTask()">Add Task</button>
             </form>
@@ -248,19 +259,22 @@
             <!-- Add your content here -->
             <h5>Task Title:</h5>
             <p>
-              <input class="form-control" id="taskTitle" type="text" aria-label="Disabled input example" disabled readonly>
+              <input class="form-control" id="taskTitle" type="text" aria-label="Disabled input example" disabled
+                readonly>
             </p>
             <h5>Task Description:</h5>
             <!-- <p id="taskDescription"></p> -->
             <p>
-              <input class="form-control" id="taskDescription" type="text" aria-label="Disabled input example" disabled readonly>
+              <input class="form-control" id="taskDescription" type="text" aria-label="Disabled input example" disabled
+                readonly>
             </p>
             <p>End Date: <span id="taskEndDate">2022-12-31</span></p>
-            <p>Status: <span id="taskStatus" >In Progress</span></p>
+            <p>Status: <span id="taskStatus">In Progress</span></p>
             <p>Priority: <span id="taskPriority">High</span></p>
             <h5>Assignee: </h5>
             <p>
-              <input class="form-control" id="taskAssignee" type="text" aria-label="Disabled input example" disabled readonly>
+              <input class="form-control" id="taskAssignee" type="text" aria-label="Disabled input example" disabled
+                readonly>
             </p>
           </div>
         </div>

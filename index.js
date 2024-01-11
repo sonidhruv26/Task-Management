@@ -1,8 +1,9 @@
 let viewModal;
 let editModal;
 
-if (localStorage.getItem('taskId') <= 0) {
+if (localStorage.getItem('numOfTasks') <= 0) {
     localStorage.setItem('taskId', 0);
+    localStorage.setItem('numOfTasks', 0);
 }
 
 // Function to get formatted date
@@ -12,7 +13,7 @@ function getDate() {
     const yyyy = date.getFullYear();
     const mm = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     const dd = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    
+
     // Create a new string with the formatted date
     const formattedDate = `${yyyy}-${mm}-${dd}`;
     // console.log("Today's date = " + formattedDate);
@@ -20,7 +21,7 @@ function getDate() {
     return formattedDate;
 }
 
-let tasks = [];
+let calTasks = [];
 
 // Function to create a task object
 function createTask(taskId, title, description, endDate, status, priority, assignee) {
@@ -37,54 +38,147 @@ function createTask(taskId, title, description, endDate, status, priority, assig
 
 // Function to return tasks object
 function getTasks() {
-    if (parseInt(localStorage.getItem('taskId')) > 0) {
+    // console.log("End date : " + JSON.parse(localStorage.getItem('task-' + 1)).endDate);
+    if (parseInt(localStorage.getItem('numOfTasks')) > 0) {
         // For loop to enter each task from local storage item tasks
         for (let i = 1; i <= parseInt(localStorage.getItem('taskId')); i++) {
-            // console.log("task-" + parseInt(localStorage.getItem('taskId')));
-            tasks[i - 1] = {
+            if (localStorage.getItem('task-' + i) == null) {
+                continue;
+            }
+            // logging priority of the task
+            // console.log(JSON.parse(localStorage.getItem('task-' + i)).priority);
+            let backgroundColor;
+            if(JSON.parse(localStorage.getItem('task-' + i)).priority == 'High') {
+                backgroundColor = '#dc3545';
+            } else if(JSON.parse(localStorage.getItem('task-' + i)).priority == 'Medium') {
+                backgroundColor = '#ffc107';
+            } else if(JSON.parse(localStorage.getItem('task-' + i)).priority == 'Low') {
+                backgroundColor = '#28a745';
+            }
+            calTasks[i - 1] = {
                 title: JSON.parse(localStorage.getItem('task-' + i)).title,
-                taskId: JSON.parse(localStorage.getItem('task-' + i)).taskId,
+                id: JSON.parse(localStorage.getItem('task-' + i)).taskId,
                 start: getDate(),
                 end: JSON.parse(localStorage.getItem('task-' + i)).endDate,
+                backgroundColor: backgroundColor,
             };
         }
     }
-    // console.log(tasks);
+    console.log(calTasks);
     // return tasks;
 }
 
+// Function to get tasks according to priority
+function getTasksByPriority(priority) {
+    console.log('getTasksByPriority() called');
+    let tasksByPriority = [];
+    if (parseInt(localStorage.getItem('numOfTasks')) > 0) {
+        // For loop to enter each task from local storage item tasks
+        for (let i = 1; i <= parseInt(localStorage.getItem('taskId')); i++) {
+            if (localStorage.getItem('task-' + i) == null) {
+                continue;
+            }
+            if (JSON.parse(localStorage.getItem('task-' + i)).priority == priority) {
+                tasksByPriority.push(JSON.parse(localStorage.getItem('task-' + i)));
+            }
+        }
+    }
+    return tasksByPriority;
+}
 
 // Add new task
 function addNewTask() {
-    localStorage.setItem('taskId', parseInt(localStorage.getItem('taskId')) + 1);
+
     console.log('addNewTask() called');
 
     // Get task details
     let title = document.getElementById('newTaskTitle').value;
     let description = document.getElementById('newTaskDescription').value;
-    let endDate = document.getElementById('newEndDate').value;
+    let endDateInput = new Date(document.getElementById('newEndDate').value);
+    endDateInput.setDate(endDateInput.getDate() + 1);
+    let endDate = endDateInput.toISOString().split('T')[0];
+    console.log("End date : " + endDate);
     let status = document.getElementById('newStatus').value;
     let priority = document.getElementById('newPriority').value;
     let assignee = document.getElementById('newAssignee').value;
-    
+
+    // Validate form inputs
+    let isValid = true;
+    if (title.trim() === '') {
+        document.getElementById('newTaskTitle').classList.add('is-invalid');
+        isValid = false;
+    } else {
+        document.getElementById('newTaskTitle').classList.remove('is-invalid');
+    }
+
+    if (description.trim() === '') {
+        document.getElementById('newTaskDescription').classList.add('is-invalid');
+        isValid = false;
+    } else {
+        document.getElementById('newTaskDescription').classList.remove('is-invalid');
+    }
+
+    if (endDate.trim() === '') {
+        document.getElementById('newEndDate').classList.add('is-invalid');
+        isValid = false;
+    } else {
+        document.getElementById('newEndDate').classList.remove('is-invalid');
+    }
+
+    if (status.trim() === '') {
+        document.getElementById('newStatus').classList.add('is-invalid');
+        isValid = false;
+    } else {
+        document.getElementById('newStatus').classList.remove('is-invalid');
+    }
+
+    if (priority.trim() === '') {
+        document.getElementById('newPriority').classList.add('is-invalid');
+        isValid = false;
+    } else {
+        document.getElementById('newPriority').classList.remove('is-invalid');
+    }
+
+    if (assignee.trim() === '') {
+        document.getElementById('newAssignee').classList.add('is-invalid');
+        isValid = false;
+    } else {
+        document.getElementById('newAssignee').classList.remove('is-invalid');
+    }
+
+    if (!isValid) {
+        console.log('Form is not valid');
+        return;
+    }
+
+    // Increase taskId
+    localStorage.setItem('taskId', parseInt(localStorage.getItem('taskId')) + 1);
+
+    // Increase number of tasks
+    localStorage.setItem('numOfTasks', parseInt(localStorage.getItem('numOfTasks')) + 1);
+
     // Create task object
-    let task = createTask(parseInt(localStorage.getItem('taskId')), title, description, endDate, status, priority, assignee);
+    let task = createTask(parseInt(localStorage.getItem('numOfTasks')), title, description, endDate, status, priority, assignee);
     // console.log(task);
-    
+
     // Add task to table
     addTaskToTable(task);
-    
+
     // Save tasks array in local storage
     localStorage.setItem('task-' + parseInt(localStorage.getItem('taskId')), JSON.stringify(task));
-    
+
     // Hide modal
     let newTaskModal = bootstrap.Modal.getInstance(document.getElementById('newTaskModal'));
     newTaskModal.hide();
-    
+
     // Reset form
     document.getElementById('addTaskForm').reset();
-}
 
+    loadCalendar();
+
+    // Reload page
+    location.reload();
+}
 
 // Show view task modal
 function showViewTaskModal(taskId) {
@@ -115,7 +209,7 @@ function showViewTaskModal(taskId) {
     document.getElementById('taskPriority').innerText = task.priority;
     document.getElementById('taskAssignee').value = task.assignee;
     // Show modal
-    
+
     // console.log("View Modal : "+viewModal);
     // let viewTaskModal = bootstrap.Modal.getInstance(viewModal);
     let viewTaskModal = new bootstrap.Modal(viewModal);
@@ -172,37 +266,31 @@ function editTask(taskId) {
 function deleteTask(taskId) {
     console.log('deleteTask() called');
     console.log("deleting task : " + taskId);
-    let temp = parseInt(localStorage.getItem('taskId'));
+    let temp = parseInt(localStorage.getItem('numOfTasks'));
     temp = temp - 1;
-    localStorage.setItem('taskId', temp);
-    // Get task details
-    let task = JSON.parse(localStorage.getItem('task-' + taskId));
+    localStorage.setItem('numOfTasks', temp);
     // Delete task from local storage
     localStorage.removeItem('task-' + taskId);
+    // Adjust task key in local storage
+    for (let i = taskId + 1; i <= parseInt(localStorage.getItem('taskId')); i++) {
+        if (localStorage.getItem('task-' + i) == null) {
+            continue;
+        }
+        let tempTask = JSON.parse(localStorage.getItem('task-' + i));
+        tempTask.taskId = tempTask.taskId - 1;
+        localStorage.setItem('task-' + (i - 1), JSON.stringify(tempTask));
+        localStorage.removeItem('task-' + i);
+    }
+    // Decrement taskId
+    localStorage.setItem('taskId', parseInt(localStorage.getItem('taskId')) - 1);
+    // Get task details
+    // let task = JSON.parse(localStorage.getItem('task-' + taskId));
     // Remove task from table
     document.getElementById('taskListTableBody').removeChild(document.getElementById('task-' + taskId));
     // Remove task from board
-    let highPriorityBoard = document.getElementById('highPriorityBoard');
-    let mediumPriorityBoard = document.getElementById('mediumPriorityBoard');
-    let lowPriorityBoard = document.getElementById('lowPriorityBoard');
-    let taskCard = document.getElementById('task-' + taskId);
-    if (task.priority == 'High') {
-        highPriorityBoard.removeChild(taskCard);
-    } else if (task.priority == 'Medium') {
-        mediumPriorityBoard.removeChild(taskCard);
-    } else if (task.priority == 'Low') {
-        lowPriorityBoard.removeChild(taskCard);
-    }
-    // Adjust taskId to match local storage
-    if (parseInt(localStorage.getItem('taskId')) > 1) {
-        for (let i = taskId; i < parseInt(localStorage.getItem('taskId')); i++) {
-            // console.log("task-" + parseInt(localStorage.getItem('taskId')));
-            let task = JSON.parse(localStorage.getItem('task-' + (i + 1)));
-            task.taskId = i;
-            localStorage.setItem('task-' + i, JSON.stringify(task));
-            console.log("taskId after delete : " + task.taskId);
-        }
-    }
+    document.getElementById('task-' + taskId).remove();
+    // Reload page
+    location.reload();
 }
 
 // Create View Button
@@ -216,7 +304,7 @@ function createViewButton(taskId) {
     viewBtn.dataset.bsPlacement = 'top';
     viewBtn.title = 'View';
     viewBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-    // console.log("TaskId at view button : "+parseInt(localStorage.getItem('taskId')));
+    // console.log("TaskId at view button : "+parseInt(localStorage.getItem('numOfTasks')));
     // viewBtn.onclick = showViewTaskModal(taskId);
     viewBtn.addEventListener('click', function () {
         // Show view task modal
@@ -237,8 +325,8 @@ function createEditButton(taskId) {
     editBtn.title = 'Edit';
     editBtn.innerHTML = '<i class="fa-solid fa-pencil"></i>';
     editBtn.addEventListener('click', function () {
-    // Show edit task modal
-    showEditTaskModal(taskId);
+        // Show edit task modal
+        showEditTaskModal(taskId);
     });
     return editBtn;
 }
@@ -269,23 +357,27 @@ function addTaskToTable(task) {
     // Get table body
     let taskListTableBody = document.getElementById('taskListTableBody');
     // console.log(taskListTableBody);
-    
+
     // Create table row
     let taskListTableRow = document.createElement('tr');
     taskListTableRow.id = "task-" + task.taskId;
-    
+
     // Add task title
     let taskTitle = document.createElement('td');
     taskTitle.className = 'p-2';
     taskTitle.innerText = task.title;
     taskListTableRow.appendChild(taskTitle);
-    
+
     // Add task end date
     let taskEndDate = document.createElement('td');
     taskEndDate.className = 'p-2';
-    taskEndDate.innerText = task.endDate;
+    // Decrement the endDate first then add it to table
+    let endDateInput = new Date(task.endDate);
+    endDateInput.setDate(endDateInput.getDate() - 1);
+    endDateInput = endDateInput.toISOString().split('T')[0];
+    taskEndDate.innerText = endDateInput;
     taskListTableRow.appendChild(taskEndDate);
-    
+
     // Add task status
     let taskStatus = document.createElement('td');
     taskStatus.className = 'p-2';
@@ -300,7 +392,7 @@ function addTaskToTable(task) {
     statusBadge.innerText = task.status;
     taskStatus.appendChild(statusBadge);
     taskListTableRow.appendChild(taskStatus);
-    
+
     // Add task priority
     let taskPriority = document.createElement('td');
     taskPriority.className = 'p-2';
@@ -315,26 +407,26 @@ function addTaskToTable(task) {
     priorityBadge.innerText = task.priority;
     taskPriority.appendChild(priorityBadge);
     taskListTableRow.appendChild(taskPriority);
-    
+
     // Add task assignee
     let taskAssignee = document.createElement('td');
     taskAssignee.className = 'p-2';
     taskAssignee.innerText = task.assignee;
     taskListTableRow.appendChild(taskAssignee);
-    
+
     // Add task actions
     let taskActions = document.createElement('td');
     taskActions.className = 'p-2';
-    
-    // Edit Button
-    taskActions.appendChild(createEditButton(task.taskId));
-    
-    // Delete Button
-    taskActions.appendChild(createDeleteButton(task.taskId));
-    
+
     // View Button
     taskActions.appendChild(createViewButton(task.taskId));
-    
+
+    // Edit Button
+    taskActions.appendChild(createEditButton(task.taskId));
+
+    // Delete Button
+    taskActions.appendChild(createDeleteButton(task.taskId));
+
     taskListTableRow.appendChild(taskActions);
     // Add row to table body
     taskListTableBody.appendChild(taskListTableRow);
@@ -342,34 +434,34 @@ function addTaskToTable(task) {
 
 // Adding tasks to board
 function addTaskToBoard(task) {
-    // console.log('addTaskToBoard() called');
     // Get all priority boards
     let highPriorityBoard = document.getElementById('highPriorityBoard');
     let mediumPriorityBoard = document.getElementById('mediumPriorityBoard');
     let lowPriorityBoard = document.getElementById('lowPriorityBoard');
-    // console.log(taskBoard);
-    // Create task card
+
+    let card = document.createElement('div');
+    card.className = 'card mb-2';
+
+    let cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
     let taskCard = document.createElement('div');
     taskCard.className = 'task-card';
     taskCard.id = "task-" + task.taskId;
-    // Add task title
+
     let taskTitle = document.createElement('h5');
     taskTitle.className = 'card-title';
     taskTitle.innerText = task.title;
     taskCard.appendChild(taskTitle);
-    // Add task description
-    let taskDescription = document.createElement('p');
-    taskDescription.className = 'card-text';
-    taskDescription.innerText = task.description;
-    taskCard.appendChild(taskDescription);
-    // Add task end date
+
     let taskEndDate = document.createElement('p');
     taskEndDate.className = 'card-text';
     taskEndDate.innerText = 'End Date: ' + task.endDate;
     taskCard.appendChild(taskEndDate);
-    // Add task status
+
     let taskStatus = document.createElement('p');
     taskStatus.className = 'card-text';
+    taskStatus.innerHTML = 'Status: ';
     let statusBadge = document.createElement('span');
     if (task.status == 'In Progress') {
         statusBadge.className = 'badge bg-warning text-dark';
@@ -381,9 +473,10 @@ function addTaskToBoard(task) {
     statusBadge.innerText = task.status;
     taskStatus.appendChild(statusBadge);
     taskCard.appendChild(taskStatus);
-    // Add task priority
+
     let taskPriority = document.createElement('p');
     taskPriority.className = 'card-text';
+    taskPriority.innerHTML = 'Priority: ';
     let priorityBadge = document.createElement('span');
     if (task.priority == 'Low') {
         priorityBadge.className = 'badge bg-success';
@@ -395,88 +488,93 @@ function addTaskToBoard(task) {
     priorityBadge.innerText = task.priority;
     taskPriority.appendChild(priorityBadge);
     taskCard.appendChild(taskPriority);
-    // Add task assignee
+
     let taskAssignee = document.createElement('p');
     taskAssignee.className = 'card-text';
     taskAssignee.innerText = 'Assignee: ' + task.assignee;
     taskCard.appendChild(taskAssignee);
-    // Add task actions
-    let taskActions = document.createElement('p');
-    taskActions.className = 'card-text';
-    // Edit Button
-    let editBtn = createEditButton(task.taskId);
-    editBtn.innerHTML = editBtn.innerHTML + ' Edit';
-    taskActions.appendChild(editBtn);
-    // Delete Button
-    let deleteBtn = createDeleteButton(task.taskId);
-    deleteBtn.innerHTML = deleteBtn.innerHTML + ' Delete';
-    taskActions.appendChild(deleteBtn);
-    // View Button
+
+    let taskActions = document.createElement('div');
+    taskActions.className = 'card-actions';
+
     let viewBtn = createViewButton(task.taskId);
     viewBtn.innerHTML = viewBtn.innerHTML + ' View';
     taskActions.appendChild(viewBtn);
+
+    let editBtn = createEditButton(task.taskId);
+    editBtn.innerHTML = editBtn.innerHTML + ' Edit';
+    taskActions.appendChild(editBtn);
+
+    let deleteBtn = createDeleteButton(task.taskId);
+    deleteBtn.innerHTML = deleteBtn.innerHTML + ' Delete';
+    taskActions.appendChild(deleteBtn);
+
     taskCard.appendChild(taskActions);
-    // Add card to board
-    if (task.taskId > 3) {
-        console.log("Row wise addding card");
-        let row = document.createElement('div');
-        row.className = 'row';
-        row.id = 'row-2';
-        let col = document.createElement('div');
-        col.className = 'col';
-        col.id = 'col-2';
-        let card = document.createElement('div');
-        card.className = 'card';
-        let cardBody = document.createElement('div');
-        cardBody.className = 'card-body';
-        row.appendChild(col);
-        cardBody.appendChild(taskCard);
-        // row.appendChild(taskCard);
-        if (task.priority == 'High') {
-            highPriorityBoard.appendChild(cardBody);
-        } else if (task.priority == 'Medium') {
-            mediumPriorityBoard.appendChild(car);
-        } else if (task.priority == 'Low') {
-            lowPriorityBoard.appendChild(row);
-        }
-    } else {
-        if (task.priority == 'High') {
-            highPriorityBoard.appendChild(taskCard);
-        } else if (task.priority == 'Medium') {
-            mediumPriorityBoard.appendChild(taskCard);
-        } else if (task.priority == 'Low') {
-            lowPriorityBoard.appendChild(taskCard);
-        }
+
+    cardBody.appendChild(taskCard);
+    card.appendChild(cardBody);
+
+    if (task.priority == 'High') {
+        highPriorityBoard.appendChild(card);
+    } else if (task.priority == 'Medium') {
+        mediumPriorityBoard.appendChild(card);
+    } else if (task.priority == 'Low') {
+        lowPriorityBoard.appendChild(card);
     }
+}
+
+// Function to load Calendar
+function loadCalendar() {
+    console.log('loadCalendar() called');
+    let pillsCalendarTab = document.getElementById('pills-calendar-tab');
+    // console.log(pillsCalendarTab);
+    pillsCalendarTab.addEventListener('click', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: calTasks,
+            eventClick: function (info) {
+                // console.log(info.event.title);
+                // console.log(info.event.id);
+                showViewTaskModal(info.event.id);
+            },
+            // cursor to pointer when mouse is over event
+            eventMouseEnter: function (info) {
+                info.el.style.cursor = 'pointer';
+            }
+        });
+        calendar.updateSize();
+        calendar.render();
+    });
 }
 
 // When DOM is rendered
 document.addEventListener('DOMContentLoaded', function () {
+    console.log(localStorage);
+
     viewModal = document.getElementById('viewTaskModal');
     editModal = document.getElementById('editTaskModal');
+    let noTasksAvailableBoard = document.getElementById('noTasksAvailableBoard');
+    let noTasksAvailableList = document.getElementById('noTasksAvailableList');
     getTasks();
     // console.log("Local storage length = " + localStorage.length);
     //Adding task row if tasks>0
-    if (parseInt(localStorage.getItem('taskId')) > 0) {
+    if (parseInt(localStorage.getItem('numOfTasks')) > 0) {
         // For loop to enter each task from local storage item tasks
         for (let i = 1; i <= parseInt(localStorage.getItem('taskId')); i++) {
-            // console.log("task-" + parseInt(localStorage.getItem('taskId')));
-
-
+            // console.log(JSON.parse(localStorage.getItem('task-' + i)));
+            if (localStorage.getItem('task-' + i) == null) {
+                console.log('Task already deleted');
+                continue; // continue to next iteration if task already deleted
+            }
             // Add task to table
             addTaskToTable(JSON.parse(localStorage.getItem('task-' + i)));
             // Add task to board
             addTaskToBoard(JSON.parse(localStorage.getItem('task-' + i)));
         }
-    } else {
-        let noTasksAvailable = document.getElementById('noTasksAvailable');
-        // Show No tasks available message in table body
-        if (!noTasksAvailable) {
-            let taskListTableBody = document.getElementById('taskListTableBody');
-            let noTasksAvailable = document.createElement('tr');
-            noTasksAvailable.id = 'noTasksAvailable';
-            noTasksAvailable.innerHTML = '<td colspan="6" class="text-center">No tasks available</td>';
-            taskListTableBody.appendChild(noTasksAvailable);
+
+        if (!noTasksAvailableBoard) {
+            console.log('No tasks available board');
             // Show No tasks available message in board
             let highPriorityBoard = document.getElementById('highPriorityBoard');
             let mediumPriorityBoard = document.getElementById('mediumPriorityBoard');
@@ -485,22 +583,64 @@ document.addEventListener('DOMContentLoaded', function () {
             noTasksAvailableBoard.id = 'noTasksAvailableBoard';
             noTasksAvailableBoard.className = 'text-center';
             noTasksAvailableBoard.innerHTML = '<p>No tasks available</p>';
-            highPriorityBoard.appendChild(noTasksAvailableBoard);
-            mediumPriorityBoard.appendChild(noTasksAvailableBoard.cloneNode(true));
-            lowPriorityBoard.appendChild(noTasksAvailableBoard.cloneNode(true));
+            let card = document.createElement('div');
+            card.className = 'card mb-2';
+            let cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+            card.appendChild(cardBody);
+            cardBody.appendChild(noTasksAvailableBoard);
+            let priorityBoards = ['High', 'Medium', 'Low'];
+            priorityBoards.forEach(function (priority) {
+                // console.log("priority: " + priority);
+                var tasks = getTasksByPriority(priority);
+                console.log("Priority: " + priority + " tasks: " + tasks.length);
+                if (tasks.length == 0) {
+                    if (priority == 'High') {
+                        highPriorityBoard.appendChild(card);
+                    } if (priority == 'Medium') {
+                        mediumPriorityBoard.appendChild(card.cloneNode(true));
+                    } if (priority == 'Low') {
+                        lowPriorityBoard.appendChild(card.cloneNode(true));
+                    }
+                }
+            });
+            // highPriorityBoard.appendChild(noTasksAvailableBoard);
+            // mediumPriorityBoard.appendChild(noTasksAvailableBoard.cloneNode(true));
+            // lowPriorityBoard.appendChild(noTasksAvailableBoard.cloneNode(true));
+        }
+    } else {
+        if (!noTasksAvailableList) {
+            console.log('No tasks available list');
+            // Show No tasks available message in table body
+            let taskListTableBody = document.getElementById('taskListTableBody');
+            let noTasksAvailableList = document.createElement('tr');
+            noTasksAvailableList.id = 'noTasksAvailableList';
+            noTasksAvailableList.innerHTML = '<td colspan="6" class="text-center">No tasks available</td>';
+            taskListTableBody.appendChild(noTasksAvailableList);
+        }
+        if (!noTasksAvailableBoard) {
+            console.log('No tasks available board');
+            // Show No tasks available message in board
+            let highPriorityBoard = document.getElementById('highPriorityBoard');
+            let mediumPriorityBoard = document.getElementById('mediumPriorityBoard');
+            let lowPriorityBoard = document.getElementById('lowPriorityBoard');
+            let noTasksAvailableBoard = document.createElement('div');
+            noTasksAvailableBoard.id = 'noTasksAvailableBoard';
+            noTasksAvailableBoard.className = 'text-center';
+            noTasksAvailableBoard.innerHTML = '<p>No tasks available</p>';
+            let card = document.createElement('div');
+            card.className = 'card mb-2';
+            let cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+            highPriorityBoard.appendChild(card);
+            card.appendChild(cardBody);
+            cardBody.appendChild(noTasksAvailableBoard);
+            mediumPriorityBoard.appendChild(card.cloneNode(true));
+            lowPriorityBoard.appendChild(card.cloneNode(true));
+
         }
     }
 
-    let pillsCalendarTab = document.getElementById('pills-calendar-tab');
-    // console.log(pillsCalendarTab);
-    pillsCalendarTab.addEventListener('click', function () {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: tasks,
-            // eventClick: ,
-        });
-        calendar.updateSize();
-        calendar.render();
-    });
+    // Load calendar
+    loadCalendar();
 });
