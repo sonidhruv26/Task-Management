@@ -1,3 +1,300 @@
+/* 
+    <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Management App</title>
+
+  <!-- Full Calendar CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- <script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js"></script> -->
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar bg-blur mb-4" style="border-radius: 0px">
+    <div class="container-fluid justify-content-center align-items-center">
+      <a class="navbar-brand" href="#" style="font-size: 32px">
+        <img src="https://cdn-icons-png.flaticon.com/512/9329/9329394.png?ga=GA1.1.1338559173.1704306654&"
+          alt="Task Management Icon" width="50" class="d-inline-block align-text-top" />
+        Task Management App
+      </a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="tasks-container bg-blur d-flex justify-content-between mb-3">
+      <!-- Tabs -->
+      <div class="tabs">
+        <ul class="nav nav-pills" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-list-tab" data-bs-toggle="pill" data-bs-target="#pills-list"
+              type="button" role="tab" aria-controls="pills-list" aria-selected="true">
+              <i class="fa-solid fa-list-check"></i>
+              List
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-board-tab" data-bs-toggle="pill" data-bs-target="#pills-board"
+              type="button" role="tab" aria-controls="pills-board" aria-selected="false">
+              <i class="fa-solid fa-inbox"></i>
+              Board
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-calendar-tab" data-bs-toggle="pill" data-bs-target="#pills-calendar"
+              type="button" role="tab" aria-controls="pills-calendar" aria-selected="false">
+              <i class="fa-regular fa-calendar"></i>
+              Calendar
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+        Add Task
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="pills-tabContent">
+
+      <!-- List-view -->
+      <div class="tab-pane fade show active task-list-table" id="pills-list" role="tabpanel" aria-labelledby="pills-list-tab" tabindex="0">
+        <!-- Task List Table -->
+        <div class="table-responsive">
+          <table class="table table-hover" style="overflow-x: auto;">
+            <thead>
+              <tr>
+                <th>Task Title</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Assignee</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="taskListTableBody">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Board View -->
+      <div class="tab-pane fade bg-blur" id="pills-board" role="tabpanel" aria-labelledby="pills-board-tab" tabindex="0">
+        <div class="row">
+          <div class="col-md-4 col-sm-6 mb-2" id="highPriorityBoard">
+            <h4>High Priority</h4>
+            <!-- <div class="card">
+              <div class="card-body">
+                Task Cards with High Priority
+              </div>
+            </div> -->
+          </div>
+          <div class="col-md-4 col-sm-6 mb-2" id="mediumPriorityBoard">
+            <h4>Medium Priority</h4>
+            <!-- <div class="card">
+              <div class="card-body">
+                Task Cards with Medium Priority
+              </div>
+            </div> -->
+          </div>
+          <div class="col-md-4 col-sm-6 mb-2" id="lowPriorityBoard">
+            <h4>Low Priority</h4>
+            <!-- <div class="card">
+              <div class="card-body">
+                Task Cards with Low Priority
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar View -->
+      <div class="tab-pane fade" id="pills-calendar" role="tabpanel" aria-labelledby="pills-calendar-tab" tabindex="0">
+        <div class="card p-4">
+          <div class="p" id="info">
+            <!-- Color code of priority -->
+            <span class="badge bg-success">Low</span>
+            <span class="badge bg-warning text-dark">Medium</span>
+            <span class="badge bg-danger">High</span>
+          </div>
+          <div id="calendar"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- New Task Modal -->
+    <div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newTaskModalLabel">New Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form autocomplete="on" id="addTaskForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="newTaskTitle" class="form-label">Task Title</label>
+                <input type="text" class="form-control" id="newTaskTitle" placeholder="Enter task title" required
+                  autocomplete="new-task-title" />
+                <div class="invalid-feedback">Please enter a task title.</div>
+              </div>
+              <div class="mb-3">
+                <label for="newTaskDescription" class="form-label">Task Description</label>
+                <textarea class="form-control" id="newTaskDescription" rows="3" placeholder="Enter task description"
+                  required autocomplete="new-task-description"></textarea>
+                <div class="invalid-feedback">Please enter a task description.</div>
+              </div>
+              <div class="mb-3">
+                <label for="newEndDate" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="newEndDate" required autocomplete="new-end-date" />
+                <div class="invalid-feedback">Please select an end date.</div>
+              </div>
+              <div class="mb-3">
+                <label for="newStatus" class="form-label">Status</label>
+                <select class="form-select" id="newStatus" required autocomplete="new-status">
+                  <option value="">Select status</option>
+                  <option value="Not Started"><span class="badge bg-primary">Not Started</span></option>
+                  <option value="In Progress"><span class="badge bg-warning text-dark">In Progress</span></option>
+                  <option value="Completed"><span class="badge bg-success">Completed</span></option>
+                </select>
+                <div class="invalid-feedback">Please select a status.</div>
+              </div>
+              <div class="mb-3">
+                <label for="newPriority" class="form-label">Priority</label>
+                <select class="form-select" id="newPriority" required autocomplete="new-priority">
+                  <option value="">Select priority</option>
+                  <option value="Low"><span class="badge bg-success">Low</span></option>
+                  <option value="Medium"><span class="badge bg-warning text-dark">Medium</span></option>
+                  <option value="High"><span class="badge bg-danger">High</span></option>
+                </select>
+                <div class="invalid-feedback">Please select a priority.</div>
+              </div>
+              <div class="mb-3">
+                <label for="newAssignee" class="form-label">Assignee</label>
+                <input type="text" class="form-control" id="newAssignee" placeholder="Enter assignee" required
+                  autocomplete="new-assignee" />
+                <div class="invalid-feedback">Please enter an assignee.</div>
+              </div>
+              <button type="button" class="btn btn-primary" onclick="addNewTask()">Add Task</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="editTaskTitle" class="form-label">Task Title</label>
+                <input type="text" class="form-control" id="editTaskTitle" placeholder="Enter task title" required />
+              </div>
+              <div class="mb-3">
+                <label for="editTaskDescription" class="form-label">Task Description</label>
+                <textarea class="form-control" id="editTaskDescription" rows="3"
+                  placeholder="Enter task description"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="editEndDate" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="editEndDate" required />
+              </div>
+              <div class="mb-3">
+                <label for="editStatus" class="form-label">Status</label>
+                <select class="form-select" id="editStatus" required>
+                  <option value="">Select status</option>
+                  <option value="Not Started"><span class="badge bg-primary">Not Started</span></option>
+                  <option value="In Progress"><span class="badge bg-warning text-dark">In Progress</span></option>
+                  <option value="Completed"><span class="badge bg-success">Completed</span></option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="editPriority" class="form-label">Priority</label>
+                <select class="form-select" id="editPriority" required>
+                  <option value="">Select priority</option>
+                  <option value="Low"><span class="badge bg-success">Low</span></option>
+                  <option value="Medium"><span class="badge bg-warning text-dark">Medium</span></option>
+                  <option value="High"><span class="badge bg-danger">High</span></option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="editAssignee" class="form-label">Assignee</label>
+                <input type="text" class="form-control" id="editAssignee" placeholder="Enter assignee" required />
+              </div>
+              <button type="button" class="btn btn-primary" id="editTaskBtn">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Task Modal -->
+    <div class="modal fade" id="viewTaskModal" tabindex="-1" aria-labelledby="viewTaskModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewTaskModalLabel">View Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Add your content here -->
+            <h5>Task Title:</h5>
+            <p>
+              <input class="form-control" id="taskTitle" type="text" aria-label="Disabled input example" disabled
+                readonly>
+            </p>
+            <h5>Task Description:</h5>
+            <!-- <p id="taskDescription"></p> -->
+            <p>
+              <input class="form-control" id="taskDescription" type="text" aria-label="Disabled input example" disabled
+                readonly>
+            </p>
+            <p>End Date: <span id="taskEndDate">2022-12-31</span></p>
+            <p>Status: <span id="taskStatus">In Progress</span></p>
+            <p>Priority: <span id="taskPriority">High</span></p>
+            <h5>Assignee: </h5>
+            <p>
+              <input class="form-control" id="taskAssignee" type="text" aria-label="Disabled input example" disabled
+                readonly>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="index.js"></script>
+  <script src="https://kit.fontawesome.com/50a82cfbfd.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
+*/
+
+
 * {
     margin: 0;
     padding: 0;
@@ -46,6 +343,12 @@ body::-webkit-scrollbar-thumb {
     padding: 10px 20px;
 }
 
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 /* Border-radius to table */
 table {
     border-radius: 10px;
@@ -60,4 +363,20 @@ td {
 th {
     text-align: center;
     margin-bottom: 10px !important;
+}
+
+
+/* Adding media queries for mobile */
+@media (max-width: 768px) {
+    .d-flex {
+        /* display: flex; */
+        justify-content: space-between;
+        align-items: stretch;
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+
+    .nav {
+        justify-content: space-between;
+    }
 }
