@@ -12,18 +12,35 @@ body {
     background: linear-gradient(to right, #b6fbff, #83a4d4);
     */
 
-    background: url(./assets/various-multi-colored-cardboard-papers-concrete-background.jpg);
+    background: url(./assets/v602-nunoon-12-rippednotes.jpg);
     background-size: cover;
-    background-repeat: no-repeat;
-    background-position: top;
+    background-repeat: repeat;
+}
 
+body::-webkit-scrollbar {
+    width: 12px;
+    /* width of the entire scrollbar */
+}
+
+body::-webkit-scrollbar-track {
+    background: transparent;
+    /* color of the tracking area */
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: gray;
+    /* color of the scroll thumb */
+    border-radius: 20px;
+    /* roundness of the scroll thumb */
+    border: 30px solid lightcyan;
+    /* creates padding around scroll thumb */
 }
 
 .bg-blur {
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.4);
     /* backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px); */
-    box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.7);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 10px;
     padding: 10px 20px;
