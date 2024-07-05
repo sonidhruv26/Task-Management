@@ -64,7 +64,7 @@ function getTasks() {
             };
         }
     }
-    console.log(calTasks);
+    // console.log(calTasks);
     // return tasks;
 }
 
@@ -525,7 +525,7 @@ function addTaskToBoard(task) {
 
 // Function to load Calendar
 function loadCalendar() {
-    console.log('loadCalendar() called');
+    // console.log('loadCalendar() called');
     let pillsCalendarTab = document.getElementById('pills-calendar-tab');
     // console.log(pillsCalendarTab);
     pillsCalendarTab.addEventListener('click', function () {
@@ -550,7 +550,7 @@ function loadCalendar() {
 
 // When DOM is rendered
 document.addEventListener('DOMContentLoaded', function () {
-    console.log(localStorage);
+    // console.log(localStorage);
 
     viewModal = document.getElementById('viewTaskModal');
     editModal = document.getElementById('editTaskModal');
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     } else {
         if (!noTasksAvailableList) {
-            console.log('No tasks available list');
+            // console.log('No tasks available list');
             // Show No tasks available message in table body
             let taskListTableBody = document.getElementById('taskListTableBody');
             let noTasksAvailableList = document.createElement('tr');
@@ -619,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function () {
             taskListTableBody.appendChild(noTasksAvailableList);
         }
         if (!noTasksAvailableBoard) {
-            console.log('No tasks available board');
+            // console.log('No tasks available board');
             // Show No tasks available message in board
             let highPriorityBoard = document.getElementById('highPriorityBoard');
             let mediumPriorityBoard = document.getElementById('mediumPriorityBoard');
